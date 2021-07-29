@@ -117,7 +117,7 @@ export default {
     };
   },
   created: async function() {
-    this.$http.post('/collection_list', {
+    this.$http.post('http://8.210.59.229:3000/collection_list', {
     }, {
       emulateJSON: true  // <-- This was missing
     })
