@@ -52,10 +52,10 @@ export default {
   },
   methods:{
     signOut: () =>{
-      this.isLogIn = true;
+      this.isLogIn = false;
       UAL.logoutUser();
       localStorage.removeItem('userInfo');
-      document.location = '/'
+      document.location = '/';
     }
   },
   data () {

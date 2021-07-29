@@ -117,6 +117,11 @@ export default {
     };
   },
   created: async function() {
+    if(UAL == undefined){
+      localStorage.removeItem('userInfo');
+      document.location = '/';
+      return;
+    }
     this.$http.post('http://8.210.59.229:3000/collection_list', {
     }, {
       emulateJSON: true  // <-- This was missing
