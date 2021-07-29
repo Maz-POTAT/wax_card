@@ -40,7 +40,7 @@ async function readAccount(user) {
 export {readAccount};
 
 async function readAssets(user, collection_list) {
-    const assetsInfo = await rpc.get_table_rows({code:'atomicassets', table: 'assets', scope: user});
+    const assetsInfo = await rpc.get_table_rows({code:'atomicassets', table: 'assets', scope: user, limit:-1});
     let assetsData = [];
     for(let i=0; i<assetsInfo.rows.length; i++){
         let assetData = {};

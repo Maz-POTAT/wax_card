@@ -117,7 +117,7 @@ export default {
     };
   },
   created: async function() {
-    this.$http.post('http://localhost:3000/collection_list', {
+    this.$http.post('/collection_list', {
     }, {
       emulateJSON: true  // <-- This was missing
     })
