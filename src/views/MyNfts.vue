@@ -120,7 +120,7 @@ export default {
       document.location = '/';
       return;
     }
-    this.$http.post('http://localhost:3000/collection_list', {
+    this.$http.post('http://8.210.59.229:3000/collection_list', {
     }, {
       emulateJSON: true  // <-- This was missing
     })
