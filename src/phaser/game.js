@@ -18,7 +18,7 @@ export class GameScene extends Phaser.Scene {
     
     create(){
         this.wax_name = localStorage.getItem('userInfo');
-        this.socket = io('http://localhost:3000');
+        this.socket = io('http://8.210.59.229:3000');
         this.socket.on('connect', () => {
             console.log(this.socket.id);
             this.text = this.add.text(300, 300, "Connected to server");
