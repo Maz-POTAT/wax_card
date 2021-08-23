@@ -1,10 +1,10 @@
 <template>
   <div>
-    <TopHeader msg="aaa" :isLogIn="isLogIn" :waxName="waxName"/>
+    <TopHeader msg="aaa" :isLogIn="isLogIn" :waxName="waxName" :activePage="Home"/>
     <b-container fluid class="bv-container">
       <!-- Content here -->
       <b-row>
-        <b-col cols="2" class="bv-left" v-show="isLogIn">
+        <b-col :md="3" class="bv-left hide-small" v-show="isLogIn">
           <b-row>
             <b-col cols="4">
               <ItemText title="RP" value="1785"/>
@@ -43,7 +43,7 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="10" class="bv-center">
+        <b-col :cols="12" :md="isLogIn ? 6 : 8" :class="isLogIn ? 'bv-center' : 'bv-logout-left'">
           <b-row>
             <b-col cols="12" class="img-content">
               <img v-bind="mainProps" alt="thumb" src="../assets/basic.png" width="100%"></img>
@@ -109,7 +109,7 @@
             </b-row>
           </b-row> -->
         </b-col>
-        <b-col cols="2" class="bv-right">
+        <b-col :cols="12" :md="isLogIn ? 3 : 4" :class="isLogIn ? 'bv-right' : 'bv-logout-right'">
           <b-row>
             <p class="top-rank">TOP RANK</p>
             <p>
@@ -194,6 +194,8 @@ export default {
       mainProps: { blank: true, blankColor: '#777', width: "100%", class: 'm1' },
       isLogIn: localStorage.getItem('userInfo') == undefined ? false : true,
       waxName: localStorage.getItem('userInfo') == undefined ? '' : localStorage.getItem('userInfo'),
+      Home: 'Home',
+      MyNfts: 'MyNfts'
     }
   },
   methods: {
@@ -226,6 +228,10 @@ export default {
         (async () => {
             console.log('Loading...');
             const sesion = await UAL.init();
+            const ual_button = document.getElementById('ual-button');
+            ual_button.innerText = "Wax Login";
+            ual_button.style.backgroundColor = "#c0c000";
+            ual_button.style.color = "#000000";
         })()
   }
 }
@@ -233,6 +239,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 h1, h2 {
   font-weight: normal;
 }
@@ -252,24 +259,40 @@ a {
   height: auto;
   padding: 50px;
 }
+
 .bv-left {
   background: #0d0d0d;
-  width: 20%;
   border-radius: 10px;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 .bv-center {
   background: transparent;
-  width: 60%;
   padding-left: 2%;
   padding-right: 2%;
 }
 .bv-right {
   background: #0d0d0d;
-  width: 20%;
   border-radius: 10px;
 }
+
+.bv-logout-left {
+  background: transparent;
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+.bv-logout-right {
+  background: #0d0d0d;
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .hide-small{
+    display:none;
+  }
+}
+
 .streak {
   background: white;
   width: 100%;
@@ -358,4 +381,5 @@ a {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
 </style>

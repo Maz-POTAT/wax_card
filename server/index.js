@@ -4,7 +4,15 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
 const server = require('http').Server(app);
-
+const socketConfig = require('./socket/socket');
+const io = require('socket.io')(server, 
+  {
+    cors: {
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST"]
+    },
+  }
+);
 // import database from "./config/database";
 const routes = require("./routes");
 
@@ -21,6 +29,8 @@ app.use(routes);
 
 app.use(express.static(path.resolve(__dirname, "../src/assets")));
 
-server.listen(port, baseUrl, () => {
-  console.log("server is listening on port 3000");
+socketConfig(io).then(() => {
+  server.listen(port, baseUrl, () => {
+    console.log("server is listening on port 3000");
+  });
 });

@@ -5,9 +5,9 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav style="width: 80%; justify-content: center">
-            <b-nav-item :to="{ path: '/' }" active v-show="isLogIn">Dashboard</b-nav-item>
-            <b-nav-item :to="{ path: '/MyNfts' }" v-show="isLogIn">My NFTs</b-nav-item>
-            <b-button variant="danger" v-show="isLogIn">Play</b-button>
+            <b-nav-item :to="{ path: '/' }" v-show="isLogIn" :active="activePage === 'Home'">Dashboard</b-nav-item>
+            <b-nav-item :to="{ path: '/MyNfts' }" v-show="isLogIn" :active="activePage === 'MyNfts'">My NFTs</b-nav-item>
+            <b-button :to="{ path: '/Game' }" variant="danger" v-show="isLogIn">Play</b-button>
             <b-nav-item href="#" v-show="isLogIn">Market</b-nav-item>
             <b-nav-item href="#" v-show="isLogIn">Help</b-nav-item>
           </b-navbar-nav>
@@ -45,6 +45,10 @@ export default {
   name: 'TopHeader',
   props: {
     isLogIn: Boolean,
+    activePage: {
+      type: String,
+      default: ""
+    },
     waxName: {
       type: String,
       default: ""
@@ -61,7 +65,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      mainProps: { blank: true, blankColor: '#777', width: 30, height: 30, class: 'm1' }
+      mainProps: { blank: true, blankColor: '#777', width: 30, height: 30, class: 'm1' },
     }
   },
 

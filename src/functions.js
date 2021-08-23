@@ -1,7 +1,9 @@
 import {fetch} from 'node-fetch';
 import {JsonRpc, Serialize} from 'eosjs';
 
-import {serialize, deserialize, ObjectSchema} from "atomicassets"
+import {ExplorerApi, serialize, deserialize, ObjectSchema} from "atomicassets"
+
+const Explorerapi = new ExplorerApi("https://wax.api.atomicassets.io", "atomicassets", {fetch, rateLimit: 10});
 
 // standard import
 
@@ -39,34 +41,29 @@ async function readAccount(user) {
 
 export {readAccount};
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function readAssets(user, collection_list) {
     const assetsInfo = await rpc.get_table_rows({code:'atomicassets', table: 'assets', scope: user, limit:-1});
     let assetsData = [];
     for(let i=0; i<assetsInfo.rows.length; i++){
-        let assetData = {};
         if(!collection_list.includes(assetsInfo.rows[i].collection_name))
             continue;
-        assetData.collection_name = assetsInfo.rows[i].collection_name;
-        assetData.schema_name = assetsInfo.rows[i].schema_name;
-        assetData.template_id = assetsInfo.rows[i].template_id;
-        const schema_form = await rpc.get_table_rows({code:'atomicassets', table: 'schemas', scope: assetData.collection_name, limit:-1});
-        const templates = await rpc.get_table_rows({code:'atomicassets', table: 'templates', scope: assetData.collection_name, limit:-1});
-        for(let j=0; j<schema_form.rows.length; j++){
-            if(schema_form.rows[j].schema_name == assetData.schema_name){
-                assetData.schema_form = ObjectSchema(schema_form.rows[j].format);
-                break;
-            }     
-        }
-        for(let j=0; j<templates.rows.length; j++){
-            if(templates.rows[j].template_id == assetData.template_id){
-                assetData.resource = templates.rows[j].immutable_serialized_data;
-                assetData.deserialized = deserialize(assetData.resource, assetData.schema_form);
-                break;
-            }     
-        }
-        assetsData.push(assetData);
+        let asset = await Explorerapi.getAsset(assetsInfo.rows[i].asset_id);
+        console.log(asset);
+        assetsData.push(asset);
+        await sleep(300);
     }
     return assetsData;
 }
 
 export {readAssets};
+
+async function readImage(asset_id) {
+    let asset = await Explorerapi.getAsset(asset_id);
+    return asset.data.img;
+}
+
+export {readImage};

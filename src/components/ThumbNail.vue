@@ -3,7 +3,7 @@
     <div class="thumb">
       <!-- <b-img src="../1.png" alt="thumb.png" width="50px"></b-img> -->
       <!-- <img v-bind="mainProps" class="thumb-img" alt="thumb" src="../assets/thumb1.png" width="100%"></img> -->
-      <img v-bind="mainProps" class="thumb-img" alt="thumb" :src="nftUrl" width="155px" height="200px" style="background: white"></img>
+      <img v-bind="mainProps" class="thumb-img" alt="thumb" :src="info.image"  style="background: transparent; margin: auto;"></img>
       <div class="leftItem">
         <span>{{leftText}}</span>
         <br>
@@ -17,9 +17,9 @@
       <div></div>
     </div>
     <div class="thumb-info">
-      <span class="thumb-info-name">{{name}}</span>
-      <span class="thumb-info-title">{{title}}</span>
-      <span class="thumb-info-sub" :style="{ 'color': titleColor}">{{subTitle}}</span>
+      <span class="thumb-info-name">{{info.name}}</span>
+      <span class="thumb-info-title">{{info.name}}</span>
+      <span class="thumb-info-sub" :style="{ 'color': titleColor}">{{}}</span>
     </div>
   </div>
 </template>
@@ -27,18 +27,6 @@
 export default {
   name: "ThumbNail",
   props: {
-    name: {
-      type: String,
-      default: ""
-    },
-    title: {
-      type: String,
-      default: ""
-    },
-    subTitle: {
-      type: String,
-      default: ""
-    },
     leftText:{
       type: String,
       default: ""
@@ -59,15 +47,10 @@ export default {
       type: String,
       default: "red"
     },
-    url: {
-      type: String,
-      default: ""
-    },
-    nftUrl: {
-      type: String,
-      default: ""
+    info: {
+      type: Object,
+      default: {}
     }
-
   },
   data () {
     return {
@@ -80,9 +63,13 @@ export default {
 .thumb {
   position: relative;
   border-radius: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px 10px;
   text-align: left;
+  background-color: #c0c0c040;
+  display: flex;
+  justify-content: center;
+  width: 150px;
+  height: 200px;
 }
 .leftItem {
   position: absolute;
@@ -124,5 +111,8 @@ export default {
   display: flex;
   flex-direction: column;
   margin-top: 20px;
+  width: 150px;
+  height: 70px;
 }
+
 </style>

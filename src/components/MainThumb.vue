@@ -1,6 +1,6 @@
 <template lang="">
   <div>
-    <div class="thumb">
+    <div class="">
       <!-- <b-img src="../1.png" alt="thumb.png" width="50px"></b-img> -->
       <img v-bind="mainProps" class="thumb-img" alt="thumb" src="../assets/avatar.png" width="100%"></img>
     </div>

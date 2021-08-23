@@ -1,10 +1,10 @@
 <template>
   <div>
-    <TopHeader msg="aaa" :isLogIn="true"  :waxName="waxName"/>
+    <TopHeader msg="aaa" :isLogIn="true"  :waxName="waxName" :activePage="MyNfts"/>
     <b-container fluid class="bv-container">
       <!-- Content here -->
       <b-row>
-        <b-col cols="2" class="bv-left">
+        <b-col :md="2" class="hide-small bv-left">
           <b-row>
             <b-col cols="4">
               <ItemText title="RP" value="1785" />
@@ -40,7 +40,7 @@
             </b-col>
           </b-row>
         </b-col>
-        <b-col cols="10" class="bv-center">
+        <b-col :cols="12" :md="10" class="bv-center">
           <b-row class="thumb-group">
             <b-col cols="12">
               <div class="thumb-group-title">
@@ -48,22 +48,18 @@
                 <span>NFTs Totals: {{cards.length}}</span>
               </div>
             </b-col>
-            <b-row>
-              <div class="thumb-item" cols="3" v-for="card in cards" :key="card.id">
+            <div class="thumb-container">
+              <div class="thumb-item" v-for="card in cards" :key="card.id">
                 <ThumbNail
-                  name="NFTs Name"
-                  title="Collection name"
-                  subTitle="Fire"
                   leftText="TW"
                   leftValue="1500"  
                   rightText="PW"
                   rightValue="19"
                   titleColor="red"
-                  url="../assets/thumb1.png"
-                  :nftUrl="card"
+                  :info="card"
                 />
               </div>
-            </b-row>
+            </div>
           </b-row>
           <b-row class="carousel">
             <b-col cols="12" class="carousel-wrapper">
@@ -114,6 +110,8 @@ export default {
       mainProps: { blank: true, blankColor: "#777", width: "100%", class: "m1" },
       waxName: localStorage.getItem('userInfo'),
       cards: [],
+      Home: 'Home',
+      MyNfts: 'MyNfts'
     };
   },
   created: async function() {
@@ -122,7 +120,7 @@ export default {
       document.location = '/';
       return;
     }
-    this.$http.post('http://8.210.59.229:3000/collection_list', {
+    this.$http.post('http://localhost:3000/collection_list', {
     }, {
       emulateJSON: true  // <-- This was missing
     })
@@ -130,7 +128,10 @@ export default {
       let assetsData = await readAssets(this.waxName, response.data.collection_list);
       
       for(let i=0; i<assetsData.length; i++){
-        this.cards.push('https://ipfs.io/ipfs/' + assetsData[i].deserialized.img);
+        this.cards.push({
+          name: assetsData[i].collection.collection_name,
+          image : 'https://ipfs.io/ipfs/' + assetsData[i].data.img
+        });
       }
     })
     .catch(function (error) {
@@ -157,22 +158,36 @@ li {
 a {
   color: #42b983;
 }
+
+@media screen and (max-width: 768px) {
+  .hide-small{
+    display:none;
+  }
+}
+
+.thumb-container{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
 .bv-container {
   background: #2e0101;
   height: auto;
   padding: 50px;
 }
+
 .bv-left {
   background: #0d0d0d;
-  width: 20%;
   border-radius: 10px;
   padding-top: 20px;
   padding-bottom: 20px;
 }
+
 .bv-center {
   background: transparent;
-  width: 80%;
 }
+
 .streak {
   background: white;
   width: 100%;
@@ -184,20 +199,24 @@ a {
   font-size: 20px;
   letter-spacing: 1px;
 }
+
 .strongFormat {
   font-size: 26px;
   font-weight: 700;
   color: black;
 }
+
 .play-btn {
   width: 100%;
   border-radius: 10px;
   background: red;
   padding: 20px;
 }
+
 .img-content {
   border-radius: 10px;
 }
+
 .info-content {
   border-radius: 10px;
   width: 100%;
@@ -211,82 +230,98 @@ a {
   margin-bottom: 30px;
   padding-left: 30px;
 }
+
 .info-text {
   font-size: 30px;
 }
+
 .info-name {
   font-size: 26px;
 }
+
 .info-value {
   font-size: 30px;
 }
+
 .thumb-group {
   padding: 10px 50px;
 }
+
 .thumb-group-title {
   display: flex;
   justify-content: space-between;
   font-size: 30px;
   padding-right: 20px;
 }
+
 .user-group {
   padding-left: 20%;
   padding-right: 10%;
 }
+
 .thumb-group-title {
   color: white;
 }
+
 .avatar2 {
   border-radius: 10px;
 }
+
 .last_seven {
   background: transparent;
   border: 1px solid white;
   border-radius: 20px;
   color: lightgrey;
 }
+
 .last_month {
   background: transparent;
   border: 1px solid red;
   border-radius: 20px;
   color: red;
 }
+
 .top-rank {
   font-size: 30px;
   color: lightgrey;
 }
+
 .row > .col {
   width: calc(100%) / 5;
 }
+
 .row {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.thumb-item {
-  width: 20%;
-}
+
 .carousel-btn {
   border-radius: 50%;
   background: white;
   font-size: 20px;
 }
+
 .carousel-icon {
   padding: 5px;
   color: #9f0303 !important;
   cursor: pointer;
 }
+
 .carousel-btn:hover {
   background: grey;
   font-size: 20px;
 }
+
 .carousel {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   padding-right: 50px;
 }
+
 .carousel-wrapper {
   padding-right: 4vh;
   text-align: end;
 }
+
 </style>
