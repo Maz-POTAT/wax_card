@@ -8,7 +8,7 @@ const socketConfig = require('./socket/socket');
 const io = require('socket.io')(server, 
   {
     cors: {
-    origin: "http://localhost:8080",
+    origin: "http://8.210.59.229:8080",
     methods: ["GET", "POST"]
     },
   }
