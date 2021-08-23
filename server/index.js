@@ -19,7 +19,7 @@ const routes = require("./routes");
 // require("dotenv");
 
 const port = process.env.PORT || 3000;
-const baseUrl = '0.0.0.0';
+const baseUrl = '172.17.15.164';
 
 app.use(cors());
 
