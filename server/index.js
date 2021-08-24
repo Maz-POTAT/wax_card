@@ -5,10 +5,9 @@ const path = require("path");
 const app = express();
 const server = require('http').Server(app);
 const socketConfig = require('./socket/socket');
-const io = require('socket.io')(server);
-
-io.origins(["http://8.210.59.229:3000"]); // for local development
-io.origins(["http://8.210.59.229:8080"]);
+const io = require('socket.io')(server, {cors: {
+  origin: '*',
+}});
 
 // import database from "./config/database";
 const routes = require("./routes");
