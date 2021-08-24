@@ -11,6 +11,10 @@ const io = require('socket.io')(server,
     origin: "http://8.210.59.229:8080",
     methods: ["GET", "POST"]
     },
+    cors: {
+      origin: "http://8.210.59.229:3000",
+      methods: ["GET", "POST"]
+      },
   }
 );
 // import database from "./config/database";
