@@ -14,7 +14,6 @@ const GameConfig = {
   scale: {
       mode: Phaser.Scale.FIT,
       parent: "game_area",
-      autoCenter: Phaser.Scale.CENTER_BOTH,
       width: 800,
       height: 600,
   },

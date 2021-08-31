@@ -20,11 +20,135 @@ function sleep(ms) {
 module.exports = async function socketConfig(io) {
 
         io.on('connection', (client) => {
+        
+        client.on('round_end', async (data) => {
+            for(let i=0; i<rooms.length; i++){
+                if(data.user_name  == rooms[i].player1.name){
+                    rooms[i].player1.score = -1;
+                }
+                else if(data.user_name  == rooms[i].player2.name){
+                    rooms[i].player2.score = -1;
+                }
+                if(rooms[i].player1.score == -1 && rooms[i].player2.score == -1){
+                    let list = await collections.getCollections();
+                    let collection_list = [];
+                    for(let i=0; i<list.length; i++){
+                        collection_list.push(list[i].name);
+                    }
+                
+                    let assetsInfo = await rpc.get_table_rows({code:'atomicassets', table: 'assets', scope: rooms[i].player1.name, limit:-1});
+                    let user1_cards = [];
+                    for(let i=0; i<assetsInfo.rows.length; i++){
+                        if(!collection_list.includes(assetsInfo.rows[i].collection_name))
+                        {
+                            assetsInfo.rows.splice(i, 1);
+                            i--;
+                        }
+                    }
+
+                    while(assetsInfo.rows.length>3){
+                        let i = Number.parseInt(Math.random() * assetsInfo.rows.length);
+                        assetsInfo.rows.splice(i, 1);
+                    }
+
+                    for(let i=0; i<assetsInfo.rows.length; i++){
+                        let asset = await Explorerapi.getAsset(assetsInfo.rows[i].asset_id);
+                        user1_cards.push({id: assetsInfo.rows[i].asset_id,
+                            mint: asset.template_mint});
+                        await sleep(300);
+                    }
+
+                    assetsInfo = await rpc.get_table_rows({code:'atomicassets', table: 'assets', scope: rooms[i].player2.name, limit:-1});
+                    console.log(assetsInfo.rows.length);
+                    let user2_cards = [];
+                    for(let i=0; i<assetsInfo.rows.length; i++){
+                        if(!collection_list.includes(assetsInfo.rows[i].collection_name))
+                        {
+                            assetsInfo.rows.splice(i, 1);
+                            i--;
+                        }
+                    }
+
+                    console.log(assetsInfo.rows.length);
+
+                    while(assetsInfo.rows.length>3){
+                        let i = Number.parseInt(Math.random() * assetsInfo.rows.length);
+                        assetsInfo.rows.splice(i, 1);
+                    }
+
+                    console.log(assetsInfo.rows.length);
+
+                    for(let i=0; i<assetsInfo.rows.length; i++){
+                        let asset = await Explorerapi.getAsset(assetsInfo.rows[i].asset_id);
+                        user2_cards.push({id: assetsInfo.rows[i].asset_id,
+                            mint: asset.template_mint});
+                        await sleep(300);
+                    }
+
+                    console.log(user2_cards.length);
+
+                    let room_info = {
+                        player1: {
+                            id: rooms[i].player1.id,
+                            name: rooms[i].player1.name,
+                            cards: user1_cards,
+                            out: undefined,
+                            score: 0,
+                        },
+                        player2: {
+                            id: rooms[i].player2.id,
+                            name: rooms[i].player2.name,
+                            cards: user2_cards,
+                            out: undefined,
+                            score: 0,
+                        }
+                    };
+    
+                    io.sockets.sockets.get(rooms[i].player1.id).emit('round_start', room_info);
+                    io.sockets.sockets.get(rooms[i].player2.id).emit('round_start', room_info);
+                    rooms.splice(i, 1);
+                    rooms.push( room_info );
+                    return;
+                }
+            }
+        });
+
+        client.on('disconnect', () =>{
+            for(let i=0; i<joined_user.length; i++){
+                if(joined_user[i].socket_id == client.id){
+                    joined_user.splice(i, 1);
+                    break;
+                }
+            }
+            if(waiting_id == client.id){
+                waiting_id = undefined;
+                waiting_user = undefined;
+            }
+            for(let i=0; i<rooms.length; i++){
+                if(rooms[i].player1.id == client.id){
+                    if(io.sockets.sockets.get(rooms[i].player2.id)){
+                        io.sockets.sockets.get(rooms[i].player2.id).disconnect();
+                        rooms.splice(i,1);
+                        break;
+                    }
+                }
+                else if(rooms[i].player2.id == client.id){
+                    if(io.sockets.sockets.get(rooms[i].player1.id))
+                    {
+                        io.sockets.sockets.get(rooms[i].player1.id).disconnect();
+                        rooms.splice(i,1);
+                        break;
+                    }
+                }
+            }
+        });
+
         client.on('card_out', (data) => {
             for( let i=0; i<rooms.length; i++){
                 if(rooms[i].player1.name == data.user_name){
                     for(let j=0; j<rooms[i].player1.cards.length; j++){
                         if(rooms[i].player1.cards[j].id == data.asset_id){
+                            console.log('found');
                             rooms[i].player1.out = rooms[i].player1.cards[j];
                             rooms[i].player1.cards.splice(j, 1);
                             if(rooms[i].player2.out != undefined){
@@ -41,10 +165,12 @@ module.exports = async function socketConfig(io) {
                             }
                         }
                     }
+                    return;
                 }
                 else if(rooms[i].player2.name == data.user_name){
                     for(let j=0; j<rooms[i].player2.cards.length; j++){
                         if(rooms[i].player2.cards[j].id == data.asset_id){
+                            console.log('found');
                             rooms[i].player2.out = rooms[i].player2.cards[j];
                             rooms[i].player2.cards.splice(j, 1);
                             if(rooms[i].player1.out != undefined){
@@ -61,6 +187,7 @@ module.exports = async function socketConfig(io) {
                             }
                         }
                     }
+                    return;
                 }
             }
         });
